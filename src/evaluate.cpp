@@ -293,8 +293,14 @@ namespace {
   template<Tracing T> template<Color Us, PieceType Pt>
   Score Evaluation<T>::pieces() {
 
-    constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
-    constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
+    constexpr Color     Them        = (Us == WHITE ? BLACK : WHITE);
+    constexpr Direction Down        = (Us == WHITE ? SOUTH : NORTH);
+    constexpr Direction Left        = WEST;
+    constexpr Direction Right       = EAST;
+    constexpr Direction UpLeft      = (Us == WHITE ? NORTH_WEST : SOUTH_WEST);
+    constexpr Direction UpRight     = (Us == WHITE ? NORTH_EAST : SOUTH_EAST);
+    constexpr Direction DownLeft    = (Us == WHITE ? SOUTH_WEST : NORTH_WEST);
+    constexpr Direction DownRight   = (Us == WHITE ? SOUTH_EAST : NORTH_EAST);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
@@ -352,12 +358,16 @@ namespace {
             {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
+                Bitboard blocked_connected = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()) 
+                                           & (shift<UpLeft>(pos.pieces(Us, PAWN)) & shift<Left>(pos.pieces()) 
+                                           |  shift<UpRight>(pos.pieces(Us, PAWN)) & shift<Right>(pos.pieces())
+                                           |  shift<DownLeft>(pos.pieces(Us, PAWN)) & shift<Left>(pos.pieces())
+                                           |  shift<DownRight>(pos.pieces(Us, PAWN)) & shift<Right>(pos.pieces()));
 
-                Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
+                Bitboard blocked_not_connected = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()) & !blocked_supported);
 
-                int factor = 8 +  6 * popcount(blocked & (FileBBB | FileGBB))
-                               +  8 * popcount(blocked & (FileCBB | FileFBB))
-                               + 10 * popcount(blocked & (FileDBB | FileEBB));
+                int factor = 8 +  6 * popcount(blocked_not_connected & CenterFiles)
+                               + 10 * popcount(blocked_connected & CenterFiles);
 
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s) * factor / 8;
 
