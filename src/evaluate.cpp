@@ -359,12 +359,12 @@ namespace {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
                 Bitboard blocked_connected = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()) 
-                                           & (shift<UpLeft>(pos.pieces(Us, PAWN)) & shift<Left>(pos.pieces()) 
-                                           |  shift<UpRight>(pos.pieces(Us, PAWN)) & shift<Right>(pos.pieces())
-                                           |  shift<DownLeft>(pos.pieces(Us, PAWN)) & shift<Left>(pos.pieces())
-                                           |  shift<DownRight>(pos.pieces(Us, PAWN)) & shift<Right>(pos.pieces()));
+                                           & ((shift<UpLeft>(pos.pieces(Us, PAWN)) & shift<Left>(pos.pieces())) 
+                                           |  (shift<UpRight>(pos.pieces(Us, PAWN)) & shift<Right>(pos.pieces()))
+                                           |  (shift<DownLeft>(pos.pieces(Us, PAWN)) & shift<Left>(pos.pieces()))
+                                           |  (shift<DownRight>(pos.pieces(Us, PAWN)) & shift<Right>(pos.pieces())));
 
-                Bitboard blocked_not_connected = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()) & !blocked_supported);
+                Bitboard blocked_not_connected = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces()) & !blocked_connected;
 
                 int factor = 8 +  6 * popcount(blocked_not_connected & CenterFiles)
                                + 10 * popcount(blocked_connected & CenterFiles);
