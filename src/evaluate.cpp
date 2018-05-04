@@ -162,7 +162,7 @@ namespace {
   constexpr Score KingProtector[] = { S(3, 5), S(4, 3), S(3, 0), S(1, -1) };
 
   // Assorted bonuses and penalties
-  constexpr Score BishopPawns        = S(  2,  3);
+  constexpr Score BishopPawns        = S(  3,  5);
   constexpr Score CloseEnemies       = S(  7,  0);
   constexpr Score Connectivity       = S(  3,  1);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -352,12 +352,13 @@ namespace {
             {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
-                Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
+                Bitboard blocked_by_nonpawn = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces() ^ pos.pieces(PAWN));
                 Bitboard blocked_by_pawn = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces(PAWN));
 
-                score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s)
-                                     * (1 + popcount(blocked & CenterFiles))
-                                     * (1 + popcount(blocked_by_pawn & CenterFiles));
+                int factor = 8 +  4 * popcount(blocked_by_nonpawn & CenterFiles) 
+                               + 12 * popcount(blocked_by_pawn & CenterFiles);
+
+                score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s) * factor / 8;
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
