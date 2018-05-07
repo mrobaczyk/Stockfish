@@ -355,9 +355,8 @@ namespace {
 
                 Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
 
-                int factor = 8 +  4 * popcount(blocked & (FileBBB | FileGBB))
-                               +  8 * popcount(blocked & (FileCBB | FileFBB))
-                               +  10 * popcount(blocked & (FileDBB | FileEBB));
+                int factor = 8 +   8 * popcount((blocked & CenterFiles) ^ attacks_bb<BISHOP>(s, pos.pieces(Us, PAWN)))
+                               +  10 * popcount(blocked & CenterFiles & attacks_bb<BISHOP>(s, pos.pieces(Us, PAWN)));
 
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s) * factor / 8;
 
