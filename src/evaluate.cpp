@@ -295,8 +295,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
-    constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB | Rank7BB
-                                                   : Rank5BB | Rank4BB | Rank3BB | Rank2BB);
+    constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                                   : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -339,10 +339,10 @@ namespace {
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             Bitboard theirMinors = pos.pieces(Them, KNIGHT) | pos.pieces(Them, BISHOP);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (2 + (popcount(theirMinors) == 0 ? 2 : 0));
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (2 + (popcount(theirMinors) == 0 ? 1 : 0));
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (1 + (popcount(theirMinors) == 0 ? 1 : 0));
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
