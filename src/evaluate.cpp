@@ -341,7 +341,7 @@ namespace {
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && distance(s, pos.square<KING>(Them)) < 4 ? 5 : 4);
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == KNIGHT && distance(s, pos.square<KING>(Them)) < 4 ? 3 : 2);
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
