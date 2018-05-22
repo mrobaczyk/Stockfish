@@ -338,10 +338,10 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && distance(s, pos.square<KING>(Them)) < 4 ? 5 : 4);
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && (s & (FileDBB | FileEBB)) ? 5 : (Pt == KNIGHT && (s & (FileCBB | FileFBB)) ? 4 : 3));
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == KNIGHT && (bb & (FileDBB | FileEBB)) ? 3 : (Pt == KNIGHT && (s & (FileCBB | FileFBB)) ? 2 : 1));
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
