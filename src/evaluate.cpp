@@ -297,7 +297,6 @@ namespace {
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
     constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
                                                    : Rank5BB | Rank4BB | Rank3BB);
-    constexpr Bitboard OutpostFiles = FileCBB | FileDBB | FileEBB | FileFBB;
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -338,12 +337,11 @@ namespace {
         {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
-
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (2 + 2 * (Pt == KNIGHT && (s & OutpostFiles) ? 1 : 0));
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && distance(s, pos.square<KING>(Them)) < 5 ? 4 : 2);
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (1 + (Pt == KNIGHT && (s & OutpostFiles) ? 1 : 0));
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == KNIGHT && distance(s, pos.square<KING>(Them)) < 5 ? 2 : 1);
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
