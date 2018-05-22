@@ -337,10 +337,7 @@ namespace {
         if (Pt == BISHOP || Pt == KNIGHT)
         {
             // Bonus if piece is on an outpost square or can reach one
-            bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
-
-            if (Pt == KNIGHT)
-                bb &= OutpostFiles;
+            bb = OutpostRanks & OutpostFiles & ~pe->pawn_attacks_span(Them);
 
             if (bb & s)
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
