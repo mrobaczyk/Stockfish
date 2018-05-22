@@ -337,11 +337,12 @@ namespace {
         {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
+            Bitboard theirMinors = pos.pieces(Them, KNIGHT) | pos.pieces(Them, BISHOP);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (2 + (popcount(theirMinors) == 0 ? 2 : 0));
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (1 + (popcount(theirMinors) == 0 ? 1 : 0));
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
