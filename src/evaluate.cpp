@@ -337,11 +337,19 @@ namespace {
         {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
+            Bitboard badOutpostFiles = FileABB | FileBBB | FileGBB | FileHBB;
+            if (!pos.can_castle(Them))
+            {
+                if (file_of(pos.square<KING>(Them)) < FILE_E)
+                    badOutpostFiles = FileGBB | FileHBB;
+                else
+                    badOutpostFiles = FileABB | FileBBB;
+            }
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && !pos.can_castle(Them) && (file_of(pos.square<KING>(Them)) - file_of(s) < 5) ? 4 : 3);
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && (s & badOutpostFiles) ? 3 : 4);
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == KNIGHT && !pos.can_castle(Them) && (file_of(pos.square<KING>(Them)) - file_of(s) < 5) ? 2 : 1);
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == KNIGHT && (s & badOutpostFiles) ? 1 : 2);
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
