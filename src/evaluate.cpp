@@ -331,8 +331,13 @@ namespace {
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         // Penalty if the piece is far from the king
-        if(Pt == KNIGHT || ((Pt == BISHOP || Pt == ROOK || Pt == QUEEN) && popcount(kingRing[Us] & attackedBy[Us][Pt]) == 0))
-            score -= KingProtector[Pt - 2] * distance(s, pos.square<KING>(Us));
+        int factor = distance(s, pos.square<KING>(Us));
+
+        // Reduce factor when piece is attacking our king ring from distance
+        if (factor > 1 && (Pt == BISHOP || Pt == ROOK || Pt == QUEEN) && popcount(kingRing[Us] & attackedBy[Us][Pt]) > 0)
+            factor -= 1;
+
+        score -= KingProtector[Pt - 2] * factor;
 
         if (Pt == BISHOP || Pt == KNIGHT)
         {
