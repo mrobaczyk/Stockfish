@@ -338,7 +338,7 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == BISHOP ? 2 : (pe->semiopen_file(Them, file_of(s)) && ((pos.pieces(Them, ROOK) | pos.pieces(Them, QUEEN)) & file_of(s)) ? 5 : 4));
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == BISHOP ? 2 : (pe->semiopen_file(Them, file_of(s)) && ((pos.pieces(Them, ROOK) | pos.pieces(Them, QUEEN)) & file_of(s)) ? 6 : 4));
 
             else if (bb &= b & ~pos.pieces(Us))
                 score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == BISHOP ? 1 : (pe->semiopen_file(Them, file_of(s)) && ((pos.pieces(Them, ROOK) | pos.pieces(Them, QUEEN)) & file_of(s)) ? 3 : 2));
