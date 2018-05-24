@@ -121,7 +121,7 @@ namespace {
   // pieces if they occupy or can reach an outpost square, bigger if that
   // square is supported by a pawn.
   constexpr Score Outpost[][2] = {
-    { S(22, 6), S(36,12) }, // Knight
+    { S(11, 3), S(18, 6) }, // Knight
     { S( 9, 2), S(15, 5) }  // Bishop
   };
 
@@ -170,6 +170,7 @@ namespace {
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 22,  0);
+  constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 10,  5);
   constexpr Score PawnlessFlank      = S( 20, 80);
   constexpr Score RookOnPawn         = S(  8, 24);
@@ -337,10 +338,15 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == BISHOP ? 2 : (pe->semiopen_file(Them, file_of(s)) && ((pos.pieces(Them, ROOK) | pos.pieces(Them, QUEEN)) & file_of(s)) ? 5 : 4));
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == BISHOP ? 1 : (pe->semiopen_file(Them, file_of(s)) && ((pos.pieces(Them, ROOK) | pos.pieces(Them, QUEEN)) & file_of(s)) ? 3 : 2));
+
+            // Bonus when behind a pawn
+            if (    relative_rank(Us, s) < RANK_5
+                && (pos.pieces(PAWN) & (s + pawn_push(Us))))
+                score += MinorBehindPawn;
 
             if (Pt == BISHOP)
             {
