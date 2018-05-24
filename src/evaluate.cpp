@@ -121,7 +121,7 @@ namespace {
   // pieces if they occupy or can reach an outpost square, bigger if that
   // square is supported by a pawn.
   constexpr Score Outpost[][2] = {
-    { S(22, 6), S(36,12) }, // Knight
+    { S(11, 3), S(18, 6) }, // Knight
     { S( 9, 2), S(15, 5) }  // Bishop
   };
 
@@ -295,7 +295,8 @@ namespace {
 
     constexpr Color     Them = (Us == WHITE ? BLACK : WHITE);
     constexpr Direction Down = (Us == WHITE ? SOUTH : NORTH);
-    constexpr Bitboard OutpostRanks = Rank4BB | Rank5BB;
+    constexpr Bitboard OutpostRanks = (Us == WHITE ? Rank4BB | Rank5BB | Rank6BB
+                                                   : Rank5BB | Rank4BB | Rank3BB);
     const Square* pl = pos.squares<Pt>(Us);
 
     Bitboard b, bb;
@@ -337,10 +338,10 @@ namespace {
             // Bonus if piece is on an outpost square or can reach one
             bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
             if (bb & s)
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * 2;
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & s)] * (Pt == KNIGHT && !pos.can_castle(Them) && (file_of(pos.square<KING>(Them)) - file_of(s) > 4) ? 3 : 4);
 
             else if (bb &= b & ~pos.pieces(Us))
-                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)];
+                score += Outpost[Pt == BISHOP][bool(attackedBy[Us][PAWN] & bb)] * (Pt == KNIGHT && !pos.can_castle(Them) && (file_of(pos.square<KING>(Them)) - file_of(s) > 4) ? 1 : 2);
 
             // Bonus when behind a pawn
             if (    relative_rank(Us, s) < RANK_5
