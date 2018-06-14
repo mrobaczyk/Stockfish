@@ -125,7 +125,7 @@ namespace {
     { S( 9, 2), S(15, 5) }  // Bishop
   };
 
-  constexpr Score RookOutpost[] = { S(10, 2), S(16, 4) };
+  constexpr Score RookOutpost[] = { S(20, 6), S(32, 12) };
 
   // RookOnFile[semiopen/open] contains bonuses for each rook when there is
   // no (friendly) pawn on the rook file.
@@ -389,10 +389,14 @@ namespace {
             if (pe->semiopen_file(Us, file_of(s)))
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
-            // Bonus for rook outpost
-            bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
-            if (bb & s)
-                score += RookOutpost[bool(attackedBy[Us][PAWN] & s)];
+            // Bonus for rook outpost, only if their minors cannot attack that outpost square
+            int theirOutpostAttackersCount = popcount(pos.pieces(Them, KNIGHT) | (pos.pieces(Them, BISHOP) & (DarkSquares & s ? DarkSquares : ~DarkSquares)));
+            if (theirOutpostAttackersCount == 0)
+            {
+                bb = OutpostRanks & ~pe->pawn_attacks_span(Them);
+                if (bb & s)
+                    score += RookOutpost[bool(attackedBy[Us][PAWN] & s)];
+            }
 
             // Penalty when trapped by the king, even more if the king cannot castle
             else if (mob <= 3)
