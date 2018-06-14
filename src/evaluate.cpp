@@ -169,7 +169,7 @@ namespace {
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  8,  1);
   constexpr Score KnightOnQueen      = S( 21, 11);
-  constexpr Score KnightPawns        = S(  3,  5);
+  constexpr Score KnightPawns        = S(  1,  3);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
   constexpr Score Overload           = S( 10,  5);
@@ -349,39 +349,36 @@ namespace {
                 && (pos.pieces(PAWN) & (s + pawn_push(Us))))
                 score += MinorBehindPawn;
 
-            Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
-
             if (Pt == KNIGHT)
             {
-				// Bonus according to number of blocked pawns in center
-				score += KnightPawns * popcount(blocked & CenterFiles);
+                // Penalty according to number pawns
+                score = KnightPawns * (8 - popcount(pos.pieces(Us, PAWN)));
             }
             else if (Pt == BISHOP)
             {
                 // Penalty according to number of pawns on the same color square as the
                 // bishop, bigger when the center files are blocked with pawns.
-
+                Bitboard blocked = pos.pieces(Us, PAWN) & shift<Down>(pos.pieces());
 
                 score -= BishopPawns * pe->pawns_on_same_color_squares(Us, s)
-                                     * (1 + popcount(blocked & CenterFiles));
+                    * (1 + popcount(blocked & CenterFiles));
 
                 // Bonus for bishop on a long diagonal which can "see" both center squares
                 if (more_than_one(Center & (attacks_bb<BISHOP>(s, pos.pieces(PAWN)) | s)))
                     score += LongDiagonalBishop;
-            }
 
-            // An important Chess960 pattern: A cornered bishop blocked by a friendly
-            // pawn diagonally in front of it is a very serious problem, especially
-            // when that pawn is also blocked.
-            if (   Pt == BISHOP
-                && pos.is_chess960()
-                && (s == relative_square(Us, SQ_A1) || s == relative_square(Us, SQ_H1)))
-            {
-                Direction d = pawn_push(Us) + (file_of(s) == FILE_A ? EAST : WEST);
-                if (pos.piece_on(s + d) == make_piece(Us, PAWN))
-                    score -= !pos.empty(s + d + pawn_push(Us))                ? CorneredBishop * 4
-                            : pos.piece_on(s + d + d) == make_piece(Us, PAWN) ? CorneredBishop * 2
-                                                                              : CorneredBishop;
+                // An important Chess960 pattern: A cornered bishop blocked by a friendly
+                // pawn diagonally in front of it is a very serious problem, especially
+                // when that pawn is also blocked.
+                if (   pos.is_chess960()
+                    && (s == relative_square(Us, SQ_A1) || s == relative_square(Us, SQ_H1)))
+                {
+                    Direction d = pawn_push(Us) + (file_of(s) == FILE_A ? EAST : WEST);
+                    if (pos.piece_on(s + d) == make_piece(Us, PAWN))
+                        score -= !pos.empty(s + d + pawn_push(Us)) ? CorneredBishop * 4
+                        : pos.piece_on(s + d + d) == make_piece(Us, PAWN) ? CorneredBishop * 2
+                        : CorneredBishop;
+                }
             }
         }
 
