@@ -352,7 +352,7 @@ namespace {
             if (Pt == KNIGHT)
             {
                 // Penalty according to number pawns
-                score = KnightPawns * (8 - popcount(pos.pieces(Us, PAWN)));
+                score -= KnightPawns * (8 - popcount(pos.pieces(Us, PAWN)));
             }
             else if (Pt == BISHOP)
             {
