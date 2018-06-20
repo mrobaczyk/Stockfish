@@ -328,6 +328,9 @@ namespace {
 
         int mob = popcount(b & mobilityArea[Us]);
 
+        if (Pt == ROOK && pos.can_castle(Us))
+            mob++;
+
         mobility[Us] += MobilityBonus[Pt - 2][mob];
 
         // Penalty if the piece is far from the king
