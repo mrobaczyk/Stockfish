@@ -388,7 +388,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= make_score((TrappedRook[pos.can_castle(Us)] * (4 - mob)) / 4, 0);
+                    score -= make_score((TrappedRook[bool(pos.can_castle(Us))] * (4 - mob)) / 4, 0);
             }
         }
 
