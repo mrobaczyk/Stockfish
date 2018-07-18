@@ -154,9 +154,6 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
-  // KingProtector[knight/bishop] contains a penalty according to distance from king
-  constexpr Score KingProtector[] = { S(5, 6), S(6, 5) };
-
   // TrappedRook[CannotCastle/CanCastle] contains a penalty for trapped rook
   constexpr int TrappedRook[] = { 170, 84 };
 
@@ -167,6 +164,7 @@ namespace {
   constexpr Score CorneredBishop     = S( 50, 50);
   constexpr Score Hanging            = S( 52, 30);
   constexpr Score HinderPassedPawn   = S(  4,  0);
+  constexpr Score KingProtector      = S(  6,  6);
   constexpr Score KnightOnQueen      = S( 21, 11);
   constexpr Score LongDiagonalBishop = S( 22,  0);
   constexpr Score MinorBehindPawn    = S( 16,  0);
@@ -344,7 +342,7 @@ namespace {
                 score += MinorBehindPawn;
 
             // Penalty if the piece is far from the king
-            score -= KingProtector[Pt == BISHOP] * distance(s, pos.square<KING>(Us));
+            score -= KingProtector * distance(s, pos.square<KING>(Us));
 
             if (Pt == BISHOP)
             {
