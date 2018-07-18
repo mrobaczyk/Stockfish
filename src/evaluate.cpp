@@ -157,6 +157,9 @@ namespace {
   // KingProtector[knight/bishop] contains a penalty according to distance from king
   constexpr Score KingProtector[] = { S(5, 6), S(6, 5) };
 
+  // TrappedRook[CannotCastle/CanCastle] contains a penalty for trapped rook
+  constexpr int TrappedRook[] = { 170, 84 };
+
   // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
@@ -175,7 +178,6 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
@@ -388,7 +390,7 @@ namespace {
             {
                 File kf = file_of(pos.square<KING>(Us));
                 if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                    score -= make_score((TrappedRook[pos.can_castle(Us)] * (4 - mob)) / 4, 0);
             }
         }
 
