@@ -174,8 +174,8 @@ namespace {
   constexpr Score ThreatBySafePawn   = S(173,102);
   //constexpr Score TrappedRook        = S( 92,  0);
   //TrappedRook[cannot/can_castle][mob]
-  int TrappedRook[2][4] = { { 184, 140, 96, 52 }, { 92, 70, 48, 26 } };
-  TUNE(TrappedRook);
+  Score TrappedRook[2][5] = { { S(184, 0), S(140, 0), S(96, 0), S(52, 0), S(8, 0) }, { S(92, 0), S(70, 0), S(48, 0), S(26, 0), S(4, 0) } };
+  TUNE(SetRange(0, 250), TrappedRook);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
@@ -384,11 +384,9 @@ namespace {
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
             // Penalty when trapped by the king, even more if the king cannot castle
-            else if (mob <= 3)
+            else if (mob <= 4)
             {
-                File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf))
-                    score -= make_score(TrappedRook[bool(pos.can_castle(Us))][mob], 0);
+                score -= TrappedRook[bool(pos.can_castle(Us))][mob];
             }
         }
 
