@@ -156,7 +156,7 @@ namespace {
 
   // TrappedRook[cannot/can_castle][mob]
   // Score TrappedRook[2][5] = { { S(184, 0), S(140,  0), S(96, 0), S(52, 0), S(8, 0) },{ S(92, 0), S(70, 0), S(48, 0), S(26, 0), S(4, 0) } };
-  Score TrappedRook[2][5] = { { S(176, 0), S(139, 10), S(82, 1), S(44, 0), S(2, 5) },{ S(98, 2), S(71, 5), S(43, 3), S(31, 2), S(7, 4) } };
+  Score TrappedRook[2][5] = { { S(176, 0), S(139, 0), S(82, 0), S(44, 0), S(2, 0) },{ S(98, 2), S(71, 5), S(43, 3), S(31, 2), S(7, 4) } };
 
     // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
