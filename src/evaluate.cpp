@@ -154,7 +154,11 @@ namespace {
   // PassedDanger[Rank] contains a term to weight the passed score
   constexpr int PassedDanger[RANK_NB] = { 0, 0, 0, 3, 7, 11, 20 };
 
-  // Assorted bonuses and penalties
+  // TrappedRook[cannot/can_castle][mob]
+  // Score TrappedRook[2][5] = { { S(184, 0), S(140,  0), S(96, 0), S(52, 0), S(8, 0) },{ S(92, 0), S(70, 0), S(48, 0), S(26, 0), S(4, 0) } };
+  Score TrappedRook[2][5] = { { S(176, 0), S(139, 10), S(82, 1), S(44, 0), S(2, 5) },{ S(98, 2), S(71, 5), S(43, 3), S(31, 2), S(7, 4) } };
+
+    // Assorted bonuses and penalties
   constexpr Score BishopPawns        = S(  3,  7);
   constexpr Score CloseEnemies       = S(  6,  0);
   constexpr Score CorneredBishop     = S( 50, 50);
@@ -172,7 +176,6 @@ namespace {
   constexpr Score ThreatByPawnPush   = S( 45, 40);
   constexpr Score ThreatByRank       = S( 16,  3);
   constexpr Score ThreatBySafePawn   = S(173,102);
-  constexpr Score TrappedRook        = S( 92,  0);
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
@@ -381,11 +384,9 @@ namespace {
                 score += RookOnFile[bool(pe->semiopen_file(Them, file_of(s)))];
 
             // Penalty when trapped by the king, even more if the king cannot castle
-            else if (mob <= 3)
+            else if (mob <= 4)
             {
-                File kf = file_of(pos.square<KING>(Us));
-                if ((kf < FILE_E) == (file_of(s) < kf) && (rank_of(pos.square<KING>(Us)) == rank_of(s)))
-                    score -= (TrappedRook - make_score(mob * 22, 0)) * (1 + !pos.can_castle(Us));
+                score -= TrappedRook[bool(pos.can_castle(Us))][mob];
             }
         }
 
