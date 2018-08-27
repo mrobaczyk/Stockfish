@@ -176,7 +176,7 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
-  constexpr Score MajorOnKingFile    = S( 20,  0);
+  constexpr Score MajorOnKingFile    = S( 15,  0);
 
 #undef S
 
