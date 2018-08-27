@@ -176,6 +176,8 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
+  constexpr Score MajorOnKingFile    = S( 20,  0);
+
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -495,6 +497,9 @@ namespace {
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & kingFlank))
         score -= PawnlessFlank;
+
+    // Penalty when our king is on the same file as enemy major pieces
+    score -= MajorOnKingFile * popcount(file_of(ksq) & (pos.pieces(Them, QUEEN, ROOK)));
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
