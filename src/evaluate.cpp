@@ -502,14 +502,11 @@ namespace {
     if (!(pos.pieces(PAWN) & kingFlank))
         score -= PawnlessFlank;
 
-    // Penalty when our king is on the same file as enemy major pieces 
-    if (pe->semiopen_file(Them, file_of(ksq)))
-    {
-        int index = popcount(file_of(ksq) & pos.pieces(Them, ROOK)) + 3 * popcount(file_of(ksq) & pos.pieces(Them, QUEEN));
-        if (index > 5)
-            index = 5;
-        score -= MajorOnKingFile[index];
-    }
+    // Penalty when our king is in the passed pawn mask as enemy major pieces 
+    int index = popcount(passed_pawn_mask(Us, ksq) & pos.pieces(Them, ROOK)) + 3 * popcount(passed_pawn_mask(Us, ksq) & pos.pieces(Them, QUEEN));
+    if (index > 5)
+        index = 5;
+    score -= MajorOnKingFile[index];
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
