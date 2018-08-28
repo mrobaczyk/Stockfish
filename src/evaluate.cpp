@@ -498,7 +498,7 @@ namespace {
         score -= PawnlessFlank;
 
     // Penalty when our king has no squares to move
-    if (popcount(attackedBy[Us][KING] & ~pos.pieces() & ~attackedBy[Them][ALL_PIECES]) == 0)
+    if (!(attackedBy[Us][KING] & ~pos.pieces() & ~attackedBy[Them][ALL_PIECES]))
         score -= KingNoMobility;
 
     // King tropism bonus, to anticipate slow motion attacks on our king
