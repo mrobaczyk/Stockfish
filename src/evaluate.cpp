@@ -176,6 +176,7 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
+  constexpr Score KingNoMobility     = S( 20, 40);
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
@@ -495,6 +496,10 @@ namespace {
     // Penalty when our king is on a pawnless flank
     if (!(pos.pieces(PAWN) & kingFlank))
         score -= PawnlessFlank;
+
+    // Penalty when our king has no squares to move
+    if (popcount(attackedBy[Us][KING] & ~pos.pieces() & ~attackedBy[Them][ALL_PIECES]) == 0)
+        score -= KingNoMobility;
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
