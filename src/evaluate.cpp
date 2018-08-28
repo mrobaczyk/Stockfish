@@ -176,7 +176,11 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
-  constexpr Score MajorOnKingFile    = S( 15,  0);
+  // MajorOnKingFile[Rook/Queen configuration: rookCount + 3*queenCount] 
+  constexpr Score MajorOnKingFile[6] = {
+      S( 0, 0), S( 5, 0), S(15, 0), //no queen
+      S( 7, 0), S(16, 0), S(20, 0)  //with queen
+  };
 
 #undef S
 
@@ -498,8 +502,11 @@ namespace {
     if (!(pos.pieces(PAWN) & kingFlank))
         score -= PawnlessFlank;
 
-    // Penalty when our king is on the same file as enemy major pieces
-    score -= MajorOnKingFile * popcount(file_of(ksq) & (pos.pieces(Them, QUEEN, ROOK)));
+    // Penalty when our king is on the same file as enemy major pieces 
+    int index = popcount(file_of(ksq) & pos.pieces(Them, ROOK)) + 3 * popcount(file_of(ksq) & pos.pieces(Them, QUEEN));
+    if (index > 5)
+        index = 5;
+    score -= MajorOnKingFile[index];
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
