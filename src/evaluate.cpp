@@ -499,7 +499,7 @@ namespace {
 
     // Penalty when our king has no squares to move
     if (!(attackedBy[Us][KING] & ~pos.pieces() & ~attackedBy[Them][ALL_PIECES]))
-        score -= KingNoMobility;
+        score -= KingNoMobility * popcount(kingFlank & pos.pieces(Them, QUEEN, ROOK));
 
     // King tropism bonus, to anticipate slow motion attacks on our king
     score -= CloseEnemies * tropism;
