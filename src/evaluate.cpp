@@ -176,7 +176,7 @@ namespace {
   constexpr Score WeakQueen          = S( 50, 10);
   constexpr Score WeakUnopposedPawn  = S(  5, 29);
 
-  constexpr Score KingNoMobility     = S( 20, 40);
+  constexpr Score KingNoMobility     = S( 22, 41);
 #undef S
 
   // Evaluation class computes and stores attacks tables and other working data
